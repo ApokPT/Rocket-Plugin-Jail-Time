@@ -20,7 +20,7 @@ Permission | Action
 ------- | -------
 <Command>jail</Command>		| allow caller to set/unset/list cells and add/remove/list players
 
-# Other Options
+## Other Options
 Option | Action
 ------- | -------
 KillInsteadOfTeleport		| Kill player that move away from the cell instead of teleporting them.
