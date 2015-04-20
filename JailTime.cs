@@ -1,27 +1,12 @@
 ﻿using Rocket.RocketAPI;
+using SDG;
+using Steamworks;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using Rocket;
-using SDG;
-using Steamworks;
-using pt.manuelbarbosa.rocketplugin;
 
-namespace pt.manuelbarbosa.rocketplugins
+namespace ApokPT.RocketPlugins
 {
-
-    class Cell
-    {
-        public Vector3 Location { get; private set; }
-        public string Name { get; private set; }
-
-        public Cell(string name, Vector3 loc)
-        {
-            Location = loc;
-            Name = name;
-        }
-
-    }
 
     class JailTime : RocketPlugin<JailTimeConfiguration>
     {
@@ -44,6 +29,8 @@ namespace pt.manuelbarbosa.rocketplugins
 
         private void RocketServerEvents_OnPlayerConnected(RocketPlayer player)
         {
+
+            if (player.IsAdmin || player.Permissions.Contains("jail.immune")) return;
 
             if (players.ContainsKey(player.CSteamID))
             {
@@ -70,6 +57,8 @@ namespace pt.manuelbarbosa.rocketplugins
 
         private void RocketPlayerEvents_OnPlayerRevive(RocketPlayer player, Vector3 position, byte angle)
         {
+            if (player.IsAdmin || player.Permissions.Contains("jail.immune")) return;
+
             if (players.ContainsKey(player.CSteamID))
             {
                 movePlayerToJail(player, players[player.CSteamID]);
@@ -132,6 +121,7 @@ namespace pt.manuelbarbosa.rocketplugins
 
         internal void addPlayer(RocketPlayer caller, string playerName, string jailName)
         {
+
             Cell jail;
             RocketPlayer target = RocketPlayer.FromName(playerName);
 
@@ -147,7 +137,13 @@ namespace pt.manuelbarbosa.rocketplugins
             }
             else
             {
-                if (jailName == "")
+
+                if (target.IsAdmin || target.Permissions.Contains("jail.immune"))
+                {
+                    RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_immune"));
+                    return;
+                }
+                else if (jailName == "")
                 {
                     jail = getRandomCell();
                     if (jail == null)
@@ -165,6 +161,7 @@ namespace pt.manuelbarbosa.rocketplugins
                         return;
                     }
                 }
+
                 players.Add(target.CSteamID, jail);
                 target.Damage(255, target.Position, EDeathCause.PUNCH, ELimb.SKULL, target.CSteamID);
 
@@ -308,6 +305,7 @@ namespace pt.manuelbarbosa.rocketplugins
                     {"jailtime_jail_unset","Cell named {0} removed from jail!"},
                     {"jailtime_jail_list","Jail Cells: {0}"},
                     
+                    {"jailtime_player_immune","That player cannot be arrested!"},
                     {"jailtime_player_in_jail","Player {0} already in jail!"},
                     {"jailtime_player_arrested","Player {0} was arrested in {1} cell!"},
                     {"jailtime_player_released","Player {0} released from jail!"},
@@ -320,6 +318,7 @@ namespace pt.manuelbarbosa.rocketplugins
                     {"jailtime_player_arrest_msg","You have been released!"},
                     {"jailtime_player_back_msg","Get back in your cell!"},
 
+                    {"jailtime_help","/jail commands: add, remove, set, unset and list"},
                     {"jailtime_help_add","use /jail add <player>/<cell> - to arrest a player, if no <cell> uses a random one"},
                     {"jailtime_help_remove","use /jail remove <player> - to release a player"},
                     {"jailtime_help_list","use /jail list players or /jail list cells"},

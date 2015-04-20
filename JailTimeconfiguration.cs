@@ -1,7 +1,6 @@
-﻿using Rocket;
-using Rocket.RocketAPI;
+﻿using Rocket.RocketAPI;
 
-namespace pt.manuelbarbosa.rocketplugin
+namespace ApokPT.RocketPlugins
 {
     public class JailTimeConfiguration : RocketConfiguration
     {
