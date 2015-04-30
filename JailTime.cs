@@ -382,7 +382,7 @@ namespace ApokPT.RocketPlugins
                     {"jailtime_player_back_msg","Get back in your cell!"},
 
                     {"jailtime_help","/jail commands: add, remove, set, unset, list, location, teleport"},
-                    {"jailtime_help_add","use /jail add <player>/<time>/<cell> - to arrest a player, if no <cell> uses a random one"},
+                    {"jailtime_help_add","use /jail add <player> <time> <cell> - to arrest a player, if no <cell> uses a random one"},
                     {"jailtime_help_remove","use /jail remove <player> - to release a player"},
                     {"jailtime_help_list","use /jail list players or /jail list cells"},
                     {"jailtime_help_set","use /jail set <cell> - to set a new jail cell"},
