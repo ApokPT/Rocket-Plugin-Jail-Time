@@ -39,6 +39,12 @@ namespace ApokPT.RocketPlugins
                         case "unset":
                             RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_unset"));
                             break;
+                        case "location":
+                            JailTime.Instance.getLocation(caller);
+                            break;
+                        case "teleport":
+                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_teleport"));
+                            break;
                         default:
                             break;
                     }
@@ -54,11 +60,15 @@ namespace ApokPT.RocketPlugins
                         case "add":
                             if (param.Length == 1)
                             {
-                                JailTime.Instance.addPlayer(caller, param[0], "");
+                                JailTime.Instance.addPlayer(caller, param[0]);
+                            }
+                            else if (param.Length == 2)
+                            {
+                                JailTime.Instance.addPlayer(caller, param[0], "", Convert.ToUInt32(param[1]));
                             }
                             else
                             {
-                                JailTime.Instance.addPlayer(caller, param[0], param[1]);
+                                JailTime.Instance.addPlayer(caller, param[0], param[2], Convert.ToUInt32(param[1]));
                             }
                             break;
                         case "remove":
@@ -80,6 +90,9 @@ namespace ApokPT.RocketPlugins
                             break;
                         case "unset":
                             JailTime.Instance.unsetJail(caller, param[0]);
+                            break;
+                        case "teleport":
+                            JailTime.Instance.teleportToCell(caller, param[0]);
                             break;
                         default:
                             break;

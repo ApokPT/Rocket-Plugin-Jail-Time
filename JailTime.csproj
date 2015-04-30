@@ -51,11 +51,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CellLoc.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="JailTime.cs" />
     <Compile Include="JailTimeCommand.cs" />
     <Compile Include="JailTimeConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sentence.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
