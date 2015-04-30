@@ -8,12 +8,14 @@ You also have the option to define if a Jailed player is banned for X seconds if
 ## Available Commands
 Command | Action
 ------- | -------
-/jail set <cell>				| creates a cell at callers location
-/jail unset <cell>				| deletes the cell
-/jail list cells				| show the list of created cells
-/jail add <player>/<cell>		| add a player to a cell (if a cell is not defined, it will choose a random one)
-/jail remove <player>			| remove a player from jail
-/jail list players				| show the list of arrested players
+/jail set <cell>				 | creates a cell at callers location
+/jail unset <cell>				 | deletes the cell
+/jail list cells				 | show the list of created cells
+/jail add <player> <time> <cell> | add a player to <cell> for <time> seconds (if a <cell> is not defined, it will choose a random one; if <time> is not defined it will use default config time)
+/jail remove <player>			 | remove a player from jail
+/jail list players				 | show the list of arrested players
+/jail location					 | get current x y z coordinates to add cell to Config file
+/jail teleport <cell>			 | teleport caller to cell
 
 ## Available Permissions
 Permission | Action
@@ -28,8 +30,9 @@ KillInsteadOfTeleport			| Kill player that move away from the cell instead of te
 BanOnReconnect					| Ban player that reconnects while in jail.
 BanOnReconnectTime				| Time for ban on reconnect (set 0 for permanent)
 WalkDistance					| Maximum distance a player can move from the cell center
+JailTimeInSeconds 				| Default arrest time if no time is specified
  
 ## Todo List:
-* Allow pre-defined cells via configuration file
-* /jail location to tell you the coordinates x/y/x of the location for future placement in the configuration file
-* more premissions
+* ~Allow pre-defined cells via configuration file~
+* ~/jail location to tell you the coordinates x/y/x of the location for future placement in the configuration file~
+* ~more premissions~

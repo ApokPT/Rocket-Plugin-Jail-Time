@@ -4,6 +4,7 @@ using SDG;
 using Steamworks;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace ApokPT.RocketPlugins
@@ -13,7 +14,7 @@ namespace ApokPT.RocketPlugins
     {
 
         private Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
-        private Dictionary<CSteamID, Sentence> players = new Dictionary<CSteamID, Sentence>();
+        private Dictionary<string, Sentence> players = new Dictionary<string, Sentence>();
 
         // Singleton
 
@@ -45,13 +46,13 @@ namespace ApokPT.RocketPlugins
 
             if (player.IsAdmin || player.Permissions.Contains("jail.immune")) return;
 
-            if (players.ContainsKey(player.CSteamID))
+            if (players.ContainsKey(player.ToString()))
             {
 
                 if (Configuration.BanOnReconnect)
                 {
-                    removePlayerFromJail(player, players[player.CSteamID]);
-                    players.Remove(player.CSteamID);
+                    removePlayerFromJail(player, players[player.ToString()]);
+                    players.Remove(player.ToString());
                     if (Configuration.BanOnReconnectTime > 0)
                     {
                         player.Ban(JailTime.Instance.Translate("jailtime_ban_time", Configuration.BanOnReconnectTime), Configuration.BanOnReconnectTime);
@@ -63,11 +64,12 @@ namespace ApokPT.RocketPlugins
                 }
                 else
                 {
-                    movePlayerToJail(player, players[player.CSteamID].Cell);
-                    RocketChatManager.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
+                    if (!(players[player.ToString()].End <= DateTime.Now))
+                    {
+                        movePlayerToJail(player, players[player.ToString()].Cell);
+                        RocketChatManager.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
+                    }
                 }
-
-
             }
         }
 
@@ -75,9 +77,9 @@ namespace ApokPT.RocketPlugins
         {
             if (player.IsAdmin || player.Permissions.Contains("jail.immune")) return;
 
-            if (players.ContainsKey(player.CSteamID))
+            if (players.ContainsKey(player.ToString()))
             {
-                movePlayerToJail(player, players[player.CSteamID].Cell);
+                movePlayerToJail(player, players[player.ToString()].Cell);
                 RocketChatManager.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
             }
         }
@@ -86,34 +88,42 @@ namespace ApokPT.RocketPlugins
 
         public void FixedUpdate()
         {
-            if (this.Loaded)
+            if (this.Loaded && players != null && players.Count != 0)
             {
-                foreach (KeyValuePair<CSteamID, Sentence> pl in players)
+                foreach (KeyValuePair<string, Sentence> pl in players)
                 {
                     if (pl.Value.End <= DateTime.Now)
                     {
-                        removePlayer(null, RocketPlayer.FromCSteamID(pl.Key).CharacterName);
-                        break;
+                        try
+                        {
+                            removePlayer(null, pl.Key);
+                            break;
+                        }
+                        catch { }
                     }
+
 
                     try
                     {
-                        if (Vector3.Distance(RocketPlayer.FromCSteamID(pl.Key).Position, pl.Value.Cell.Location) > Configuration.WalkDistance)
+                        RocketPlayer player = RocketPlayer.FromCSteamID(new CSteamID(Convert.ToUInt64(pl.Key)));
+
+                        if (Vector3.Distance(player.Position, pl.Value.Cell.Location) > Configuration.WalkDistance)
                         {
                             if (Configuration.KillInsteadOfTeleport)
                             {
-                                RocketPlayer.FromCSteamID(pl.Key).Damage(255, RocketPlayer.FromCSteamID(pl.Key).Position, EDeathCause.PUNCH, ELimb.SKULL, RocketPlayer.FromCSteamID(pl.Key).CSteamID);
+                                player.Damage(255, player.Position, EDeathCause.PUNCH, ELimb.SKULL, player.CSteamID);
                             }
                             else
                             {
-                                RocketPlayer.FromCSteamID(pl.Key).Teleport(pl.Value.Cell.Location, RocketPlayer.FromCSteamID(pl.Key).Rotation);
+                                player.Teleport(pl.Value.Cell.Location, player.Rotation);
                             }
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
-
+                        Logger.LogWarning(e.ToString());
                     }
+
                 }
             }
         }
@@ -154,7 +164,7 @@ namespace ApokPT.RocketPlugins
                 RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", jailName));
                 return;
             }
-            else if (players.ContainsKey(target.CSteamID))
+            else if (players.ContainsKey(target.ToString()))
             {
                 RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_in_jail", target.CharacterName));
                 return;
@@ -187,8 +197,10 @@ namespace ApokPT.RocketPlugins
                     return;
                 }
 
-                players.Add(target.CSteamID, new Sentence(jail, jailTime, target.Position));
+                players.Add(target.ToString(), new Sentence(jail, jailTime, target.Position));
                 movePlayerToJail(target, jail);
+                target.GiveItem(303, 1);
+                target.GiveItem(304, 1);
 
                 RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_arrest_msg", jailTime));
                 RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_arrested", target.CharacterName, jail.Name));
@@ -197,20 +209,30 @@ namespace ApokPT.RocketPlugins
 
         internal void removePlayer(RocketPlayer caller, string playerName)
         {
-            RocketPlayer target = RocketPlayer.FromName(playerName);
-
-            if (target != null && players.ContainsKey(target.CSteamID))
+            RocketPlayer target;
+            try
             {
-                removePlayerFromJail(target, players[target.CSteamID]);
-                players.Remove(target.CSteamID);
+                target = RocketPlayer.FromCSteamID(new CSteamID(Convert.ToUInt64(playerName)));
+            }
+            catch
+            {
+                target = RocketPlayer.FromName(playerName);
+            }
+
+            if (players.ContainsKey(target.ToString()))
+            {
+                removePlayerFromJail(target, players[target.ToString()]);
                 RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_release_msg"));
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_released", target.CharacterName));
+
+                if (caller != null) RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_released", target.CharacterName));
+                players.Remove(target.ToString());
             }
             else
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", playerName));
+                if (caller != null) RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", playerName));
                 return;
             }
+
         }
 
         internal void listPlayers(RocketPlayer caller)
@@ -224,16 +246,10 @@ namespace ApokPT.RocketPlugins
             {
                 string playersString = "";
 
-                foreach (KeyValuePair<CSteamID, Sentence> player in players)
+                foreach (KeyValuePair<string, Sentence> player in players)
                 {
-                    try
-                    {
-                        playersString += RocketPlayer.FromCSteamID(player.Key).CharacterName + " (" + player.Value.Cell.Name + "), ";
-                    }
-                    catch
-                    {
-                    }
-
+                    try { playersString += RocketPlayer.FromName(player.Key).CharacterName + " (" + player.Value.Cell.Name + "), "; }
+                    catch { }
                 }
 
                 if (playersString != "") playersString = playersString.Remove(playersString.Length - 2) + ".";
@@ -328,8 +344,6 @@ namespace ApokPT.RocketPlugins
         {
             player.Inventory.Clear();
             player.Teleport(jail.Location, player.Rotation);
-            player.GiveItem(303, 1);
-            player.GiveItem(304, 1);
         }
 
         private void removePlayerFromJail(RocketPlayer player, Sentence sentence)

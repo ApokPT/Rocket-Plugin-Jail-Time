@@ -53,14 +53,14 @@ namespace ApokPT.RocketPlugins
                 else
                 {
 
-                    string[] param = string.Join(" ", oper.Skip(1).ToArray()).Split('/');
+                    string[] param = string.Join(" ", oper.Skip(1).ToArray()).Split(' ');
 
                     switch (oper[0])
                     {
                         case "add":
                             if (param.Length == 1)
                             {
-                                JailTime.Instance.addPlayer(caller, param[0]);
+                                JailTime.Instance.addPlayer(caller, string.Join(" ", param.ToArray()));
                             }
                             else if (param.Length == 2)
                             {
@@ -68,11 +68,11 @@ namespace ApokPT.RocketPlugins
                             }
                             else
                             {
-                                JailTime.Instance.addPlayer(caller, param[0], param[2], Convert.ToUInt32(param[1]));
+                                JailTime.Instance.addPlayer(caller, param[0], string.Join(" ", param.Skip(2).ToArray()), Convert.ToUInt32(param[1]));
                             }
                             break;
                         case "remove":
-                            JailTime.Instance.removePlayer(caller, param[0]);
+                            JailTime.Instance.removePlayer(caller, string.Join(" ", param.ToArray()));
                             break;
                         case "list":
                             switch (param[0])
@@ -86,13 +86,13 @@ namespace ApokPT.RocketPlugins
                             }
                             break;
                         case "set":
-                            JailTime.Instance.setJail(caller, param[0], caller.Position);
+                            JailTime.Instance.setJail(caller, string.Join(" ", param.ToArray()), caller.Position);
                             break;
                         case "unset":
-                            JailTime.Instance.unsetJail(caller, param[0]);
+                            JailTime.Instance.unsetJail(caller, string.Join(" ", param.ToArray()));
                             break;
                         case "teleport":
-                            JailTime.Instance.teleportToCell(caller, param[0]);
+                            JailTime.Instance.teleportToCell(caller, string.Join(" ", param.ToArray()));
                             break;
                         default:
                             break;
