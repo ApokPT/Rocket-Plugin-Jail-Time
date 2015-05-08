@@ -262,11 +262,6 @@ namespace ApokPT.RocketPlugins
 
         // Jail Methods 
 
-        internal void getLocation(RocketPlayer caller)
-        {
-            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_location", caller.Position.x, caller.Position.y, caller.Position.z));
-        }
-
         internal void setJail(RocketPlayer caller, string jailName, UnityEngine.Vector3 location)
         {
             if (caller != null)
@@ -281,6 +276,8 @@ namespace ApokPT.RocketPlugins
                     RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_set", jailName));
 
                 }
+                Configuration.Cells.Add(new CellLoc(jailName, location.x, location.y, location.z));
+                Configuration.Save();
             }
             cells.Add(jailName.ToLower(), new Cell(jailName, location));
         }
@@ -296,6 +293,15 @@ namespace ApokPT.RocketPlugins
             {
                 RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_unset", jailName));
                 cells.Remove(jailName.ToLower());
+                foreach (CellLoc cell in Configuration.Cells)
+                {
+                    if (cell.Name.ToLower() == jailName.ToLower())
+                    {
+                        Configuration.Cells.Remove(cell);
+                        Configuration.Save();
+                        return;
+                    }
+                }
             }
         }
 
@@ -360,13 +366,11 @@ namespace ApokPT.RocketPlugins
             {
                 return new Dictionary<string, string>(){
                     {"jailtime_jail_notset","No cells set, please use /jail set [name] first!"},
-                    {"jailtime_jail_notfound","No cell found named {0}!"},
+                    {"jailtime_jail_notfound","No cell named {0} found!"},
                     {"jailtime_jail_set","New cell named {0} created where you stand!"},
                     {"jailtime_jail_exists","Cell named {0} already exists!"},
-                    {"jailtime_jail_unset","Cell named {0} removed from jail!"},
+                    {"jailtime_jail_unset","Cell named {0} deleted!"},
                     {"jailtime_jail_list","Jail Cells: {0}"},
-                    {"jailtime_jail_location","Cell location - x:{0} y:{1} z:{2}"},
-                    
                     
                     {"jailtime_player_immune","That player cannot be arrested!"},
                     {"jailtime_player_in_jail","Player {0} already in jail!"},
@@ -381,7 +385,7 @@ namespace ApokPT.RocketPlugins
                     {"jailtime_player_release_msg","You have been released!"},
                     {"jailtime_player_back_msg","Get back in your cell!"},
 
-                    {"jailtime_help","/jail commands: add, remove, set, unset, list, location, teleport"},
+                    {"jailtime_help","/jail commands: add, remove, set, unset, list, teleport"},
                     {"jailtime_help_add","use /jail add <player> <time> <cell> - to arrest a player, if no <cell> uses a random one"},
                     {"jailtime_help_remove","use /jail remove <player> - to release a player"},
                     {"jailtime_help_list","use /jail list players or /jail list cells"},

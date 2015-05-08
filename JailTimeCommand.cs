@@ -1,4 +1,5 @@
-﻿using Rocket.RocketAPI;
+﻿using Rocket.Logging;
+using Rocket.RocketAPI;
 using System;
 using System.Linq;
 
@@ -39,9 +40,6 @@ namespace ApokPT.RocketPlugins
                         case "unset":
                             RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_unset"));
                             break;
-                        case "location":
-                            JailTime.Instance.getLocation(caller);
-                            break;
                         case "teleport":
                             RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_teleport"));
                             break;
@@ -60,14 +58,17 @@ namespace ApokPT.RocketPlugins
                         case "add":
                             if (param.Length == 1)
                             {
+                                // Arrest player in random cell for default time - /jail add apok
                                 JailTime.Instance.addPlayer(caller, string.Join(" ", param.ToArray()));
                             }
                             else if (param.Length == 2)
                             {
+                                // Arrest player in random cell for defined time - /jail add apok 20
                                 JailTime.Instance.addPlayer(caller, param[0], "", Convert.ToUInt32(param[1]));
                             }
                             else
                             {
+                                // Arrest player in specific cell for defined time - /jail add apok 20 cell 1
                                 JailTime.Instance.addPlayer(caller, param[0], string.Join(" ", param.Skip(2).ToArray()), Convert.ToUInt32(param[1]));
                             }
                             break;

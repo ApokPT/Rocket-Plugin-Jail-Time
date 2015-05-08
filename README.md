@@ -14,7 +14,6 @@ Command | Action
 /jail add <player> <time> <cell> | add a player to <cell> for <time> seconds (if a <cell> is not defined, it will choose a random one; if <time> is not defined it will use default config time)
 /jail remove <player>			 | remove a player from jail
 /jail list players				 | show the list of arrested players
-/jail location					 | get current x y z coordinates to add cell to Config file
 /jail teleport <cell>			 | teleport caller to cell
 
 ## Available Permissions
