@@ -7,8 +7,10 @@ namespace ApokPT.RocketPlugins
 {
     public class JailTimeCommand : IRocketCommand
     {
-        public void Execute(RocketPlayer caller, string command)
+        public void Execute(RocketPlayer caller, string[] cmd)
         {
+
+            string command = String.Join(" ", cmd);
 
             if (!caller.IsAdmin && !JailTime.Instance.Configuration.Enabled) return;
 
