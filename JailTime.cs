@@ -107,7 +107,7 @@ namespace ApokPT.RocketPlugins
                     {
                         RocketPlayer player = RocketPlayer.FromCSteamID(new CSteamID(Convert.ToUInt64(pl.Key)));
 
-                        if (Vector3.Distance(player.Position, pl.Value.Cell.Location) > Configuration.WalkDistance)
+                        if (player != null && Vector3.Distance(player.Position, pl.Value.Cell.Location) > Configuration.WalkDistance)
                         {
                             if (Configuration.KillInsteadOfTeleport)
                             {
@@ -119,10 +119,7 @@ namespace ApokPT.RocketPlugins
                             }
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Logger.LogWarning(e.ToString());
-                    }
+                    catch  { }
 
                 }
             }
@@ -219,7 +216,7 @@ namespace ApokPT.RocketPlugins
                 target = RocketPlayer.FromName(playerName);
             }
 
-            if (players.ContainsKey(target.ToString()))
+            if (target != null && players.ContainsKey(target.ToString()))
             {
                 removePlayerFromJail(target, players[target.ToString()]);
                 RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_release_msg"));
