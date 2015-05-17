@@ -1,5 +1,6 @@
-﻿using Rocket.Logging;
-using Rocket.RocketAPI;
+﻿using Rocket.Unturned;
+using Rocket.Unturned.Commands;
+using Rocket.Unturned.Player;
 using System;
 using System.Linq;
 
@@ -16,7 +17,7 @@ namespace ApokPT.RocketPlugins
 
             if (String.IsNullOrEmpty(command.Trim()))
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help"));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help"));
                 return;
             }
             else
@@ -28,22 +29,22 @@ namespace ApokPT.RocketPlugins
                     switch (oper[0])
                     {
                         case "add":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_add"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_add"));
                             break;
                         case "remove":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_remove"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_remove"));
                             break;
                         case "list":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_list"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_list"));
                             break;
                         case "set":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_set"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_set"));
                             break;
                         case "unset":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_unset"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_unset"));
                             break;
                         case "teleport":
-                            RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_help_teleport"));
+                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_teleport"));
                             break;
                         default:
                             break;

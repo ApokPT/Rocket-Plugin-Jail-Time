@@ -1,10 +1,10 @@
-﻿using Rocket.RocketAPI;
+﻿using Rocket.API;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace ApokPT.RocketPlugins
 {
-    public class JailTimeConfiguration : IRocketConfiguration
+    public class JailTimeConfiguration : IRocketPluginConfiguration
     {
 
         public bool Enabled;
@@ -17,7 +17,7 @@ namespace ApokPT.RocketPlugins
         [XmlArrayItem(ElementName = "Cell")]
         public List<CellLoc> Cells;
 
-        public IRocketConfiguration DefaultConfiguration
+        public IRocketPluginConfiguration DefaultConfiguration
         {
             get
             {

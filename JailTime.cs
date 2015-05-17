@@ -1,10 +1,11 @@
-﻿using Rocket.Logging;
-using Rocket.RocketAPI;
+﻿using Rocket.Unturned;
+using Rocket.Unturned.Events;
+using Rocket.Unturned.Player;
+using Rocket.Unturned.Plugins;
 using SDG;
 using Steamworks;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace ApokPT.RocketPlugins
@@ -25,8 +26,8 @@ namespace ApokPT.RocketPlugins
             Instance = this;
             if (JailTime.Instance.Configuration.Enabled)
             {
-                Rocket.RocketAPI.Events.RocketPlayerEvents.OnPlayerRevive += RocketPlayerEvents_OnPlayerRevive;
-                Rocket.RocketAPI.Events.RocketServerEvents.OnPlayerConnected += RocketServerEvents_OnPlayerConnected;
+                RocketPlayerEvents.OnPlayerRevive += RocketPlayerEvents_OnPlayerRevive;
+                RocketServerEvents.OnPlayerConnected += RocketServerEvents_OnPlayerConnected;
             }
             injectConfiCells();
         }
@@ -67,7 +68,7 @@ namespace ApokPT.RocketPlugins
                     if (!(players[player.ToString()].End <= DateTime.Now))
                     {
                         movePlayerToJail(player, players[player.ToString()].Cell);
-                        RocketChatManager.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
+                        RocketChat.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
                     }
                 }
             }
@@ -80,7 +81,7 @@ namespace ApokPT.RocketPlugins
             if (players.ContainsKey(player.ToString()))
             {
                 movePlayerToJail(player, players[player.ToString()].Cell);
-                RocketChatManager.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
+                RocketChat.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
             }
         }
 
@@ -158,12 +159,12 @@ namespace ApokPT.RocketPlugins
 
             if (target == null)
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", jailName));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", jailName));
                 return;
             }
             else if (players.ContainsKey(target.ToString()))
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_in_jail", target.CharacterName));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_in_jail", target.CharacterName));
                 return;
             }
             else
@@ -171,12 +172,12 @@ namespace ApokPT.RocketPlugins
 
                 if (target.IsAdmin || target.Permissions.Contains("jail.immune"))
                 {
-                    RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_immune"));
+                    RocketChat.Say(target, JailTime.Instance.Translate("jailtime_player_immune"));
                     return;
                 }
                 else if (cells.Count == 0)
                 {
-                    RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_notset", jailName));
+                    RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notset", jailName));
                     return;
                 }
                 else if (jailName == "")
@@ -190,7 +191,7 @@ namespace ApokPT.RocketPlugins
 
                 if (jail == null)
                 {
-                    RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
+                    RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
                     return;
                 }
 
@@ -199,8 +200,8 @@ namespace ApokPT.RocketPlugins
                 target.GiveItem(303, 1);
                 target.GiveItem(304, 1);
 
-                RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_arrest_msg", jailTime));
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_arrested", target.CharacterName, jail.Name));
+                RocketChat.Say(target, JailTime.Instance.Translate("jailtime_player_arrest_msg", jailTime));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_arrested", target.CharacterName, jail.Name));
             }
         }
 
@@ -219,14 +220,14 @@ namespace ApokPT.RocketPlugins
             if (target != null && players.ContainsKey(target.ToString()))
             {
                 removePlayerFromJail(target, players[target.ToString()]);
-                RocketChatManager.Say(target, JailTime.Instance.Translate("jailtime_player_release_msg"));
+                RocketChat.Say(target, JailTime.Instance.Translate("jailtime_player_release_msg"));
 
-                if (caller != null) RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_released", target.CharacterName));
+                if (caller != null) RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_released", target.CharacterName));
                 players.Remove(target.ToString());
             }
             else
             {
-                if (caller != null) RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", playerName));
+                if (caller != null) RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", playerName));
                 return;
             }
 
@@ -236,7 +237,7 @@ namespace ApokPT.RocketPlugins
         {
             if (players.Count == 0)
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_list_clear"));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_list_clear"));
                 return;
             }
             else
@@ -251,7 +252,7 @@ namespace ApokPT.RocketPlugins
 
                 if (playersString != "") playersString = playersString.Remove(playersString.Length - 2) + ".";
 
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_player_list", playersString));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_player_list", playersString));
                 return;
             }
         }
@@ -265,12 +266,12 @@ namespace ApokPT.RocketPlugins
             {
                 if (cells.ContainsKey(jailName.ToLower()))
                 {
-                    RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_exists", jailName));
+                    RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_exists", jailName));
                     return;
                 }
                 else
                 {
-                    RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_set", jailName));
+                    RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_set", jailName));
 
                 }
                 Configuration.Cells.Add(new CellLoc(jailName, location.x, location.y, location.z));
@@ -283,12 +284,12 @@ namespace ApokPT.RocketPlugins
         {
             if (!cells.ContainsKey(jailName.ToLower()))
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
                 return;
             }
             else
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_unset", jailName));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_unset", jailName));
                 cells.Remove(jailName.ToLower());
                 foreach (CellLoc cell in Configuration.Cells)
                 {
@@ -307,7 +308,7 @@ namespace ApokPT.RocketPlugins
         {
             if (!cells.ContainsKey(jailName.ToLower()))
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
                 return;
             }
             else
@@ -321,7 +322,7 @@ namespace ApokPT.RocketPlugins
         {
             if (cells.Count == 0)
             {
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_notset"));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notset"));
                 return;
             }
             else
@@ -335,11 +336,10 @@ namespace ApokPT.RocketPlugins
 
                 if (jailsString != "") jailsString = jailsString.Remove(jailsString.Length - 2) + ".";
 
-                RocketChatManager.Say(caller, JailTime.Instance.Translate("jailtime_jail_list", jailsString));
+                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_list", jailsString));
                 return;
             }
         }
-
 
         // Arrest Methods
 
