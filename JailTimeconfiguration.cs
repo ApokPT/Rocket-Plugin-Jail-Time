@@ -17,10 +17,9 @@ namespace ApokPT.RocketPlugins
         [XmlArrayItem(ElementName = "Cell")]
         public List<CellLoc> Cells;
 
-        public IRocketPluginConfiguration DefaultConfiguration
+        public void LoadDefaults()
         {
-            get
-            {
+
                 JailTimeConfiguration config = new JailTimeConfiguration();
                 config.Cells = new List<CellLoc>() { 
                     new CellLoc("O'Leary 1", -240.5706,34.50486,16.71745),
@@ -34,8 +33,7 @@ namespace ApokPT.RocketPlugins
                 config.JailTimeInSeconds = 600;
                 config.WalkDistance = 5;
                 config.Enabled = true;
-                return config;
-            }
+            
         }
     }
 }
