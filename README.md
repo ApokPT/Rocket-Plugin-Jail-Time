@@ -20,8 +20,8 @@ Command | Action
 
 ## Available Permissions
 
-Permission							| Action
-			  --------------------- | ---------------------
+Permission| Action
+--------- | -------
 <Command>jail</Command>				| allow caller to set/unset/list cells and add/remove/list players
 <Command>jail.add</Command>			| allow caller to add players
 <Command>jail.remove</Command>		| allow caller to remove players
