@@ -1,8 +1,6 @@
 # JailTime
 ### Send players to jail
 
-
-
 JailTime allows the caller to create Jail Cells and place players in them. Players in Jail Cells cannot move more then X yards from the cell and will die/teleport back to the cell if they move too far (disconnect and suicide will also teleport you back to the cell).
 
 You also have the option to define if a Jailed player is banned for X minutes if he decides to disconnect while in jail.
