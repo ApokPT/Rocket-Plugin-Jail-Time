@@ -14,12 +14,11 @@ namespace ApokPT.RocketPlugins
         public DateTime End { get; private set; }
         public Vector3 Location { get; private set; }
 
-
         public Sentence(Cell cell, uint time, Vector3 location)
         {
             Cell = cell;
             Time = time;
-            End = DateTime.Now.AddSeconds(time);
+            End = DateTime.Now.AddMinutes(time);
             Location = location;
         }
     }

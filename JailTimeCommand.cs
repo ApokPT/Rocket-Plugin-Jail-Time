@@ -3,6 +3,7 @@ using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,9 +46,12 @@ namespace ApokPT.RocketPlugins
                     "jail",
                     "jail.add",
                     "jail.remove",
+                    "jail.list",
+                    "jail.info",
                     "jail.set",
                     "jail.unset",
-                    "jail.teleport"
+                    "jail.teleport",
+                    "jail.cuff"
                 };
             }
         }
@@ -70,6 +74,10 @@ namespace ApokPT.RocketPlugins
             else if (cmd.Length == 1 && player.HasPermission("jail.remove") && cmd[0] == "remove")
             {
                 UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_remove"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.info") && cmd[0] == "info")
+            {
+                JailTime.Instance.infoPlayer(player);
             }
             else if (cmd.Length == 1 && player.HasPermission("jail.list") && cmd[0] == "list")
             {
@@ -118,6 +126,16 @@ namespace ApokPT.RocketPlugins
             else if (cmd.Length == 2 && player.HasPermission("jail.teleport") && cmd[0] == "teleport")
             {
                 JailTime.Instance.teleportToCell(player, cmd[1].ToString());
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.cuff") && cmd[0] == "cuff")
+            {
+                UnturnedPlayer target = UnturnedPlayer.FromName(cmd[1]);
+                JailTime.Instance.Cuff(target);
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.uncuff") && cmd[0] == "uncuff")
+            {
+                UnturnedPlayer target = UnturnedPlayer.FromName(cmd[1]);
+                JailTime.Instance.Uncuff(target);
             }
             else if (cmd.Length == 3 && player.HasPermission("jail.add") && cmd[0] == "add")
             {

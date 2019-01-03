@@ -91,7 +91,6 @@ namespace ApokPT.RocketPlugins
         }
 
         // Fixed Update
-
         public void FixedUpdate()
         {
             if ( players != null && players.Count != 0)
@@ -132,7 +131,6 @@ namespace ApokPT.RocketPlugins
         }
 
         // Private Methods 
-
         private Cell getCellbyName(string jailName)
         {
 
@@ -153,7 +151,6 @@ namespace ApokPT.RocketPlugins
 
 
         // Player Methods
-
         internal void addPlayer(UnturnedPlayer caller, string playerName, string jailName = "", uint jailTime = 0)
         {
 
@@ -262,13 +259,28 @@ namespace ApokPT.RocketPlugins
             }
         }
 
+        internal void infoPlayer(UnturnedPlayer caller)
+        {
+
+            if (players.ContainsKey(caller.ToString()))
+            {
+
+                foreach (KeyValuePair<string, Sentence> player in players)
+                {
+                    UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_info_me", player.Value.Cell.Name, player.Value.Time, player.Value.End));
+                }
+
+            }
+            
+        }
 
         // Jail Methods 
-
         internal void setJail(UnturnedPlayer caller, string jailName, UnityEngine.Vector3 location)
         {
+
             if (caller != null)
             {
+
                 if (cells.ContainsKey(jailName.ToLower()))
                 {
                     UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_exists", jailName));
@@ -279,14 +291,19 @@ namespace ApokPT.RocketPlugins
                     UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_set", jailName));
 
                 }
+
                 Configuration.Instance.Cells.Add(new CellLoc(jailName, location.x, location.y, location.z));
                 Configuration.Save();
+
             }
+
             cells.Add(jailName.ToLower(), new Cell(jailName, location));
+
         }
 
         internal void unsetJail(UnturnedPlayer caller, string jailName)
         {
+
             if (!cells.ContainsKey(jailName.ToLower()))
             {
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
@@ -294,6 +311,7 @@ namespace ApokPT.RocketPlugins
             }
             else
             {
+
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_unset", jailName));
                 cells.Remove(jailName.ToLower());
                 foreach (CellLoc cell in Configuration.Instance.Cells)
@@ -305,12 +323,15 @@ namespace ApokPT.RocketPlugins
                         return;
                     }
                 }
+
             }
+
         }
 
 
         internal void teleportToCell(UnturnedPlayer caller, string jailName)
         {
+
             if (!cells.ContainsKey(jailName.ToLower()))
             {
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notfound", jailName));
@@ -320,11 +341,13 @@ namespace ApokPT.RocketPlugins
             {
                 caller.Teleport(cells[jailName.ToLower()].Location, caller.Rotation);
             }
+
         }
 
 
         internal void listJails(UnturnedPlayer caller)
         {
+
             if (cells.Count == 0)
             {
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_notset"));
@@ -344,6 +367,7 @@ namespace ApokPT.RocketPlugins
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_jail_list", jailsString));
                 return;
             }
+
         }
 
         // Arrest Methods
@@ -352,47 +376,68 @@ namespace ApokPT.RocketPlugins
         {
             //player.Inventory.Clear();
             player.Teleport(jail.Location, player.Rotation);
+
         }
 
         private void removePlayerFromJail(UnturnedPlayer player, Sentence sentence)
         {
            // player.Inventory.Clear();
             player.Teleport(sentence.Location, player.Rotation);
+
+        }
+
+        public void Cuff(UnturnedPlayer player)
+        {
+
+            player.Player.animator.captorID = new CSteamID(666);
+            player.Player.animator.captorItem = 1197;
+            player.Player.animator.captorStrength = 65535;
+            player.Player.animator.sendGesture(EPlayerGesture.ARREST_START, true);
+
+        }
+
+        public void Uncuff(UnturnedPlayer player)
+        {
+
+            if (player.Player.animator.captorStrength == 0)
+            {
+                return;
+            }
+            player.Player.animator.captorID = CSteamID.Nil;
+            player.Player.animator.captorStrength = 0;
+            player.Player.animator.sendGesture(EPlayerGesture.ARREST_STOP, true);
+
         }
 
         // Translations
-
         public override TranslationList DefaultTranslations => new TranslationList()
         {
-                    {"jailtime_jail_notset","No cells set, please use /jail set [name] first!"},
-                    {"jailtime_jail_notfound","No cell named {0} found!"},
-                    {"jailtime_jail_set","New cell named {0} created where you stand!"},
-                    {"jailtime_jail_exists","Cell named {0} already exists!"},
-                    {"jailtime_jail_unset","Cell named {0} deleted!"},
-                    {"jailtime_jail_list","Jail Cells: {0}"},
-                    
-                    {"jailtime_player_immune","That player cannot be arrested!"},
-                    {"jailtime_player_in_jail","Player {0} already in jail!"},
-                    {"jailtime_player_arrested","Player {0} was arrested in {1} cell!"},
-                    {"jailtime_player_released","Player {0} released from jail!"},
-                    
-                    {"jailtime_player_list","Players: {0}"},
-                    {"jailtime_player_list_clear","Jail cells are getting dusty!"},
-                    {"jailtime_player_notfound","No player found named {0}!"},
-                    
-                    {"jailtime_player_arrest_msg","You have been arrested for {0} seconds!"},
-                    {"jailtime_player_release_msg","You have been released!"},
-                    {"jailtime_player_back_msg","Get back in your cell!"},
-
-                    {"jailtime_help","/jail commands: add, remove, set, unset, list, teleport"},
-                    {"jailtime_help_add","use /jail add <player> <time> <cell> - to arrest a player, if no <cell> uses a random one"},
-                    {"jailtime_help_remove","use /jail remove <player> - to release a player"},
-                    {"jailtime_help_list","use /jail list players or /jail list cells"},
-                    {"jailtime_help_set","use /jail set <cell> - to set a new jail cell"},
-                    {"jailtime_help_unset","use /jail unset <cell> - to delete a jail cell"},
-                    {"jailtime_help_teleport","use /jail teleport <cell> - to teleport to a cell"},
-                    {"jailtime_ban","You have been banned for disconnecting while in Jail!"},
-                    {"jailtime_ban_time","You have been banned for {0} seconds for disconnecting while in Jail!"}
+            {"jailtime_jail_notset","No cells set, please use /jail set [name] first!"},
+            {"jailtime_jail_notfound","No cell named {0} found!"},
+            {"jailtime_jail_set","New cell named {0} created where you stand!"},
+            {"jailtime_jail_exists","Cell named {0} already exists!"},
+            {"jailtime_jail_unset","Cell named {0} deleted!"},
+            {"jailtime_jail_list","Jail Cells: {0}"},                    
+            {"jailtime_player_immune","That player cannot be arrested!"},
+            {"jailtime_player_in_jail","Player {0} already in jail!"},
+            {"jailtime_player_arrested","Player {0} was arrested in {1} cell!"},
+            {"jailtime_player_released","Player {0} released from jail!"},                  
+            {"jailtime_player_list","Players: {0}"},
+            {"jailtime_player_list_clear","Jail cells are getting dusty!"},
+            {"jailtime_player_notfound","No player found named {0}!"},                   
+            {"jailtime_player_arrest_msg","You have been arrested for {0} minutes!"},
+            {"jailtime_player_info_me","Jail Cell: {0}, Jail Time: {1}, released in: {3}"},
+            {"jailtime_player_release_msg","You have been released!"},
+            {"jailtime_player_back_msg","Get back in your cell!"},
+            {"jailtime_help","/jail commands: add, remove, set, unset, list, teleport"},
+            {"jailtime_help_add","use /jail add <player> <time> <cell> - to arrest a player, if no <cell> uses a random one"},
+            {"jailtime_help_remove","use /jail remove <player> - to release a player"},
+            {"jailtime_help_list","use /jail list players or /jail list cells"},
+            {"jailtime_help_set","use /jail set <cell> - to set a new jail cell"},
+            {"jailtime_help_unset","use /jail unset <cell> - to delete a jail cell"},
+            {"jailtime_help_teleport","use /jail teleport <cell> - to teleport to a cell"},
+            {"jailtime_ban","You have been banned for disconnecting while in Jail!"},
+            {"jailtime_ban_time","You have been banned for {0} minutes for disconnecting while in Jail!"}
         };
        
     }
