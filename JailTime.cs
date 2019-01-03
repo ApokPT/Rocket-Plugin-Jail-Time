@@ -244,7 +244,7 @@ namespace ApokPT.RocketPlugins
             }
             else
             {
-                string playersString = "";
+                string playersString = ""; 
 
                 foreach (KeyValuePair<string, Sentence> player in players)
                 {
