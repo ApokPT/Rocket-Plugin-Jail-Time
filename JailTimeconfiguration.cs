@@ -30,8 +30,8 @@ namespace ApokPT.RocketPlugins
                 config.KillInsteadOfTeleport = false;
                 config.BanOnReconnect = false;
                 config.BanOnReconnectTime = 0;
-                config.JailTimeInSeconds = 600;
-                config.WalkDistance = 5;
+                config.JailTimeInSeconds = 10;
+                config.WalkDistance = 10;
                 config.Enabled = true;
             
         }

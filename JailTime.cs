@@ -50,13 +50,13 @@ namespace ApokPT.RocketPlugins
 
             if (player.IsAdmin || player.HasPermission("jail.immune")) return;
 
-            if (players.ContainsKey(player.ToString()))
+            if (players.ContainsKey(player.CSteamID.m_SteamID.ToString()))
             {
 
                 if (Configuration.Instance.BanOnReconnect)
                 {
-                    removePlayerFromJail(player, players[player.ToString()]);
-                    players.Remove(player.ToString());
+                    removePlayerFromJail(player, players[player.CSteamID.m_SteamID.ToString()]);
+                    players.Remove(player.CSteamID.m_SteamID.ToString());
                     if (Configuration.Instance.BanOnReconnectTime > 0)
                     {
                         player.Ban(JailTime.Instance.Translate("jailtime_ban_time", Configuration.Instance.BanOnReconnectTime), Configuration.Instance.BanOnReconnectTime);
@@ -68,9 +68,9 @@ namespace ApokPT.RocketPlugins
                 }
                 else
                 {
-                    if (!(players[player.ToString()].End <= DateTime.Now))
+                    if (!(players[player.CSteamID.m_SteamID.ToString()].End <= DateTime.Now))
                     {
-                        movePlayerToJail(player, players[player.ToString()].Cell);
+                        movePlayerToJail(player, players[player.CSteamID.m_SteamID.ToString()].Cell);
                         UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
                     }
                 }
@@ -81,7 +81,7 @@ namespace ApokPT.RocketPlugins
         {
             if (player.IsAdmin || player.HasPermission("jail.immune")) return;
 
-            if (players.ContainsKey(player.ToString()))
+            if (players.ContainsKey(player.CSteamID.m_SteamID.ToString()))
             {
                 movePlayerToJail(player, players[player.ToString()].Cell);
                 UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_player_back_msg"));
@@ -162,7 +162,7 @@ namespace ApokPT.RocketPlugins
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", jailName));
                 return;
             }
-            else if (players.ContainsKey(target.ToString()))
+            else if (players.ContainsKey(target.CSteamID.m_SteamID.ToString()))
             {
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_in_jail", target.CharacterName));
                 return;
@@ -195,10 +195,8 @@ namespace ApokPT.RocketPlugins
                     return;
                 }
 
-                players.Add(target.ToString(), new Sentence(jail, jailTime, target.Position));
+                players.Add(target.CSteamID.m_SteamID.ToString(), new Sentence(jail, jailTime, target.Position));
                 movePlayerToJail(target, jail);
-                target.GiveItem(303, 1);
-                target.GiveItem(304, 1);
 
                 UnturnedChat.Say(target, JailTime.Instance.Translate("jailtime_player_arrest_msg", jailTime));
                 UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_arrested", target.CharacterName, jail.Name));
@@ -217,9 +215,9 @@ namespace ApokPT.RocketPlugins
                 target = UnturnedPlayer.FromName(playerName);
             }
 
-            if (target != null && players.ContainsKey(target.ToString()))
+            if (target != null && players.ContainsKey(target.CSteamID.m_SteamID.ToString()))
             {
-                removePlayerFromJail(target, players[target.ToString()]);
+                removePlayerFromJail(target, players[target.CSteamID.m_SteamID.ToString()]);
                 UnturnedChat.Say(target, JailTime.Instance.Translate("jailtime_player_release_msg"));
 
                 if (caller != null) UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_released", target.CharacterName));
@@ -260,12 +258,12 @@ namespace ApokPT.RocketPlugins
         internal void infoPlayer(UnturnedPlayer caller)
         {
 
-            if (players.ContainsKey(caller.ToString()))
+            if (players.ContainsKey(caller.CSteamID.m_SteamID.ToString()))
             {
 
                 foreach (KeyValuePair<string, Sentence> player in players)
                 {
-                    UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_info_me", player.Value.Cell.Name, player.Value.Time, player.Value.End));
+                    UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_info_me", player.Value.Cell.Name.ToString(), player.Value.Time.ToString(), player.Value.End.ToString()));
                 }
 
             } else
@@ -427,7 +425,7 @@ namespace ApokPT.RocketPlugins
             {"jailtime_player_list_clear","Jail cells are getting dusty!"},
             {"jailtime_player_notfound","No player found named {0}!"},                   
             {"jailtime_player_arrest_msg","You have been arrested for {0} minutes!"},
-            {"jailtime_player_info_me","Jail Cell: {0}, Jail Time: {1}, released in: {3}"},
+            {"jailtime_player_info_me","Jail Cell: {0}, Jail Time: {1}, released in: {2}"},
             {"jailtime_player_release_msg","You have been released!"},
             {"jailtime_player_back_msg","Get back in your cell!"},
             {"jailtime_help","/jail commands: add, remove, set, unset, list, teleport"},
