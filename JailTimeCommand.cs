@@ -51,6 +51,7 @@ namespace ApokPT.RocketPlugins
                 };
             }
         }
+
         public void Execute(IRocketPlayer caller, string[] cmd)
         {
 
@@ -101,7 +102,7 @@ namespace ApokPT.RocketPlugins
             }
             else if (cmd.Length == 2 && player.HasPermission("jail.list") && cmd[0] == "list")
             {
-                switch (cmd[0])
+                switch (cmd[1])
                 {
                     case "players":
                         JailTime.Instance.listPlayers(player);
