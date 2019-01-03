@@ -270,6 +270,9 @@ namespace ApokPT.RocketPlugins
                     UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_info_me", player.Value.Cell.Name, player.Value.Time, player.Value.End));
                 }
 
+            } else
+            {
+                     UnturnedChat.Say(caller, JailTime.Instance.Translate("jailtime_player_notfound", caller.CharacterName.ToString()));
             }
             
         }
