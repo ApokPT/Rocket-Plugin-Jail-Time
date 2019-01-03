@@ -12,7 +12,7 @@ namespace ApokPT.RocketPlugins
 
         public Sentence(Cell cell, uint time, Vector3 location)
         {
-            Cell = cell;
+            Cell = cell; 
             Time = time;
             End = DateTime.Now.AddMinutes(time);
             Location = location;
