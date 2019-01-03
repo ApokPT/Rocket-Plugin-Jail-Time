@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ApokPT.RocketPlugins
+namespace ApokPT.RocketPlugins 
 {
     class Sentence
     {

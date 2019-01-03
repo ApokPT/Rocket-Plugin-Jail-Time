@@ -277,7 +277,7 @@ namespace ApokPT.RocketPlugins
             
         }
 
-        // Jail Methods 
+        // Jail Methods  
         internal void setJail(UnturnedPlayer caller, string jailName, UnityEngine.Vector3 location)
         {
 

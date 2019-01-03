@@ -20,7 +20,7 @@ namespace ApokPT.RocketPlugins
         public string Help
         {
             get { return "Send players to jail!"; }
-        }
+        }  
 
         public string Syntax
         {
@@ -29,7 +29,7 @@ namespace ApokPT.RocketPlugins
 
         public List<string> Aliases
         {
-            get { return new List<string>(); }
+            get { return new List<string>() { "jt" }; }
         }
 
         public AllowedCaller AllowedCaller
