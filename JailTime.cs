@@ -5,8 +5,6 @@ using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
-using Rocket.Unturned.Plugins;
-using SDG;
 using SDG.Unturned;
 using Steamworks;
 using System;
