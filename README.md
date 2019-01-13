@@ -1,4 +1,8 @@
 # JailTime
+
+I'm not the creator of this plugin, I just updated it.
+This is a fork from ApokPT/Rocket-Plugin-Jail-Time.
+
 ### Send players to jail
 
 JailTime allows the caller to create Jail Cells and place players in them. Players in Jail Cells cannot move more then X yards from the cell and will die/teleport back to the cell if they move too far (disconnect and suicide will also teleport you back to the cell).

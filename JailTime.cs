@@ -17,13 +17,10 @@ namespace ApokPT.RocketPlugins
     class JailTime : RocketPlugin<JailTimeConfiguration>
     {
 
+        public static JailTime Instance;
         private Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
         private Dictionary<string, Sentence> players = new Dictionary<string, Sentence>();
-
-        // Singleton
-
-        public static JailTime Instance;
-
+        
         protected override void Load()
         {
             Instance = this;
@@ -44,7 +41,6 @@ namespace ApokPT.RocketPlugins
         }
 
         // Events
-
         private void RocketServerEvents_OnPlayerConnected(UnturnedPlayer player)
         {
 
