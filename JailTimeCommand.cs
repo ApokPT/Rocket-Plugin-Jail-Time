@@ -1,124 +1,149 @@
-﻿using Rocket.Unturned;
-using Rocket.Unturned.Commands;
+﻿using Rocket.API;
+using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace ApokPT.RocketPlugins
 {
     public class JailTimeCommand : IRocketCommand
     {
-        public void Execute(RocketPlayer caller, string[] cmd)
-        {
-
-            string command = String.Join(" ", cmd);
-
-            if (!caller.IsAdmin && !JailTime.Instance.Configuration.Enabled) return;
-
-            if (String.IsNullOrEmpty(command.Trim()))
-            {
-                RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help"));
-                return;
-            }
-            else
-            {
-                string[] oper = command.Split(' ');
-
-                if (oper.Length == 1)
-                {
-                    switch (oper[0])
-                    {
-                        case "add":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_add"));
-                            break;
-                        case "remove":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_remove"));
-                            break;
-                        case "list":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_list"));
-                            break;
-                        case "set":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_set"));
-                            break;
-                        case "unset":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_unset"));
-                            break;
-                        case "teleport":
-                            RocketChat.Say(caller, JailTime.Instance.Translate("jailtime_help_teleport"));
-                            break;
-                        default:
-                            break;
-                    }
-                    return;
-                }
-                else
-                {
-
-                    string[] param = string.Join(" ", oper.Skip(1).ToArray()).Split(' ');
-
-                    switch (oper[0])
-                    {
-                        case "add":
-                            if (param.Length == 1)
-                            {
-                                // Arrest player in random cell for default time - /jail add apok
-                                JailTime.Instance.addPlayer(caller, string.Join(" ", param.ToArray()));
-                            }
-                            else if (param.Length == 2)
-                            {
-                                // Arrest player in random cell for defined time - /jail add apok 20
-                                JailTime.Instance.addPlayer(caller, param[0], "", Convert.ToUInt32(param[1]));
-                            }
-                            else
-                            {
-                                // Arrest player in specific cell for defined time - /jail add apok 20 cell 1
-                                JailTime.Instance.addPlayer(caller, param[0], string.Join(" ", param.Skip(2).ToArray()), Convert.ToUInt32(param[1]));
-                            }
-                            break;
-                        case "remove":
-                            JailTime.Instance.removePlayer(caller, string.Join(" ", param.ToArray()));
-                            break;
-                        case "list":
-                            switch (param[0])
-                            {
-                                case "players":
-                                    JailTime.Instance.listPlayers(caller);
-                                    break;
-                                case "cells":
-                                    JailTime.Instance.listJails(caller);
-                                    break;
-                            }
-                            break;
-                        case "set":
-                            JailTime.Instance.setJail(caller, string.Join(" ", param.ToArray()), caller.Position);
-                            break;
-                        case "unset":
-                            JailTime.Instance.unsetJail(caller, string.Join(" ", param.ToArray()));
-                            break;
-                        case "teleport":
-                            JailTime.Instance.teleportToCell(caller, string.Join(" ", param.ToArray()));
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-            }
-        }
-
-        public string Help
-        {
-            get { return "Send players to jail!"; }
-        }
-
         public string Name
         {
             get { return "jail"; }
         }
 
-        public bool RunFromConsole
+        public string Help
         {
-            get { return false; }
+            get { return "Send players to jail!"; }
+        }  
+
+        public string Syntax
+        {
+            get { return "<player> [<jail>] [<time>]"; }
         }
+
+        public List<string> Aliases
+        {
+            get { return new List<string>() { "jt" }; }
+        }
+
+        public AllowedCaller AllowedCaller
+        {
+            get { return AllowedCaller.Player; }
+        }
+
+        public List<string> Permissions
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    "jail",
+                    "jail.add",
+                    "jail.remove",
+                    "jail.list",
+                    "jail.info",
+                    "jail.set",
+                    "jail.unset",
+                    "jail.teleport",
+                    "jail.cuff"
+                };
+            }
+        }
+
+        public void Execute(IRocketPlayer caller, string[] cmd)
+        {
+
+            UnturnedPlayer player = (UnturnedPlayer)caller;
+
+            if (!player.IsAdmin && !JailTime.Instance.Configuration.Instance.Enabled) return;
+
+            if (cmd.Length == 0 && player.HasPermission("jail"))
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help"));
+                return;
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.add") && cmd[0] == "add")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_add"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.remove") && cmd[0] == "remove")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_remove"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.info") && cmd[0] == "info")
+            {
+                JailTime.Instance.infoPlayer(player);
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.list") && cmd[0] == "list")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_list"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.set") && cmd[0] == "set")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_set"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.unset") && cmd[0] == "unset")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_unset"));
+            }
+            else if (cmd.Length == 1 && player.HasPermission("jail.teleport") && cmd[0] == "teleport")
+            {
+                UnturnedChat.Say(player, JailTime.Instance.Translate("jailtime_help_teleport"));
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.add") && cmd[0] == "add")
+            {
+                JailTime.Instance.addPlayer(player, cmd[1].ToString());
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.remove") && cmd[0] == "remove")
+            {
+                JailTime.Instance.removePlayer(player, cmd[1].ToString());
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.list") && cmd[0] == "list")
+            {
+                switch (cmd[1])
+                {
+                    case "players":
+                        JailTime.Instance.listPlayers(player);
+                        break;
+                    case "cells":
+                        JailTime.Instance.listJails(player);
+                        break;
+                }
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.set") && cmd[0] == "set")
+            {
+                JailTime.Instance.setJail(player, cmd[1].ToString(), player.Position);
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.unset") && cmd[0] == "unset")
+            {
+                JailTime.Instance.unsetJail(player, cmd[1].ToString());
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.teleport") && cmd[0] == "teleport")
+            {
+                JailTime.Instance.teleportToCell(player, cmd[1].ToString());
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.cuff") && cmd[0] == "cuff")
+            {
+                UnturnedPlayer target = UnturnedPlayer.FromName(cmd[1]);
+                JailTime.Instance.Cuff(target);
+            }
+            else if (cmd.Length == 2 && player.HasPermission("jail.uncuff") && cmd[0] == "uncuff")
+            {
+                UnturnedPlayer target = UnturnedPlayer.FromName(cmd[1]);
+                JailTime.Instance.Uncuff(target);
+            }
+            else if (cmd.Length == 3 && player.HasPermission("jail.add") && cmd[0] == "add")
+            {
+                JailTime.Instance.addPlayer(player, cmd[1].ToString(), "", Convert.ToUInt32(cmd[2]));
+            }
+            else if (cmd.Length == 4 && player.HasPermission("jail.add") && cmd[0] == "add")
+            {
+                JailTime.Instance.addPlayer(player, cmd[1].ToString(), cmd[2].ToString(), Convert.ToUInt32(cmd[3]));
+            }
+
+        }
+
     }
 }
